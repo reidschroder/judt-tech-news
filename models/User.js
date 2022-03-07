@@ -1,5 +1,6 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../config/connection");
+const bcrypt = require('bcrypt');
 
 //create our User Model
 class User extends Model {}
@@ -44,17 +45,22 @@ User.init(
     },
   },
   {
-    // TABLE CONFIGURATION OPTIONS GO HERE (https://sequelize.org/v5/manual/models-definition.html#configuration))
-    // pass in our imported sequelize connection (the direct connection to our database)
-    sequelize,
-    //dont automatically creatte createdAt/updatedAt timestamp fields
-    timestamps: false,
-    //dont pluralize name of database table
-    freezeTableName: true,
-    //use undercross instead of camel calsing (ex `comment_text` and not commentText)
-    underscored: true,
-    //make it so our model name stays lowercase in thge database
-    modelName: "user",
+      hooks: {
+          async beforeCreate(newUserData) {
+              newUserData.password = await bcrypt.hash(newUserData.password, 10);
+                  return newUserData;
+          },
+          async beforeUpdate(updatedUserData) {
+              updatedUserData.password = await bcrypt.hash(updatedUserData.password, 10);
+              return updatedUserData;
+          }
+      },
+          sequelize,
+          timestamps: false,
+          freezeTableName: true,
+          underscored: true,
+          modelName: 'user'
+      
   }
 );
 
