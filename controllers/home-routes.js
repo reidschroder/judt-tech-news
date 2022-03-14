@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
           attributes: ['username']
         }
       },
-      {git
+      {
         model: User,
         attributes: ['username']
       }
